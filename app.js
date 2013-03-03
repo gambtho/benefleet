@@ -57,6 +57,7 @@ function restrict(req, res, next) {
 
 app.get('/', restrict, routes.index);
 app.get('/users', restrict, user.list);
+app.get('/logout', user.logout);
 app.get('/login', function(req, res){
     res.render('login');
 });
