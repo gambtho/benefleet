@@ -46,7 +46,8 @@ exports.login = function(req, res){
 // dummy database
 
 var users = {
-    tj: { name: 'tj' }
+    tj: { name: 'tj' },
+    tom: { name: 'tom'}
 };
 
 // when you create a user, generate a salt
@@ -70,7 +71,6 @@ function authenticate(name, pass, fn) {
     // the hash against the pass / salt, if there is a match we
     // found the user
     hash(pass, user.salt, function (err, hash) {
-        console.log("in hash");
         if (err) return fn(err);
         if (hash == user.hash) return fn(null, user);
         fn(new Error('invalid password'));

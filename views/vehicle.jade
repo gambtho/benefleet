@@ -1,0 +1,36 @@
+extends layout
+
+block content
+    div.top
+        form.form-horizontal(method="post", id="loginForm")
+            label Make
+            input.span3(id="make", type="text", name="make", placeholder="Audi")
+            label Model
+            input.span3(id="model", type="model", name="model", placeholder="A4")
+            label Year
+            input.span3(id="year", type="year", name="year", placeholder="2006")
+            label VIN
+            input.span3(id="vin", type="vin", name="vin", placeholder="AZXCVASD2342")
+            input.btn(type="submit", value="Add Vehicle")
+    div.container
+        div.content
+            table.table.table-striped
+                thead
+                    tr
+                        th Make
+                        th Model
+                        th Year
+                        th VIN
+                tbody
+                    each vehicle, vin in vehicles
+                        tr
+                            td
+                                a(href='/vehicle/' + vehicle.vin) #{vehicle.make}
+                            td
+                                a(href='/vehicle/' + vehicle.vin) #{vehicle.model}
+                            td
+                                a(href='/vehicle/' + vehicle.vin) #{vehicle.year}
+                            td
+                                a(href='/vehicle/' + vehicle.vin) #{vehicle.vin}
+    div.footer
+
