@@ -30,8 +30,9 @@ app.configure(function()
         delete req.session.error;
         delete req.session.success;
         res.locals.message = '';
-        if (err) res.locals.message = '<p class="msg error">' + err + '</p>';
-        if (msg) res.locals.message = '<p class="msg success">' + msg + '</p>';
+        if (err) res.locals.message = err;
+        if (msg) res.locals.message = msg;
+//        if (msg) res.locals.message = '<p class="msg success">' + msg + '</p>';
         next();
   });
   app.use(app.router);
@@ -49,6 +50,11 @@ app.configure('production', function(){
 app.get('/login', function(req, res){
     res.render('login');
 });
+app.get('/register', function(req, res) {
+   res.render('register');
+});
+app.post('/login', user.login);
+app.post('/register', user.register);
 
 function restrict(req, res, next) {
     if (req.session.user) {
@@ -66,8 +72,6 @@ app.get('/logout', user.logout);
 app.get('/vehicle/:id', restrict, vehicle.edit);
 
 app.post('/vehicle', restrict, vehicle.add);
-app.post('/login', user.login);
-
 
 
 http.createServer(app).listen(app.get('port'), function(){

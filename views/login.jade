@@ -2,11 +2,18 @@ extends guestlayout
 
 block content
     div.top
+        Message #{message}
+        br
+        br
         form.form-horizontal(method="post", id="loginForm")
             label Username
             input.span3(id="username", type="text", name="username", placeholder="Enter your username")
             label Password
             input.span3(id="password", type="password", name="password")
-            input.btn(type="submit", value="Log In")
+            br
+            br
+            button(type="submit")#btn-login.btn.btn-primary
+                i.icon-lock.icon-white
+                | Sign in
     div.footer
 

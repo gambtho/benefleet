@@ -1,0 +1,19 @@
+extends guestlayout
+
+block content
+    div.top
+        Message #{message}
+        br
+        br
+        form.form-horizontal(method="post", id="loginForm")
+            label Username
+            input.span3(id="username", type="username", name="username", placeholder="fonzaghi")
+            label Passsword
+            input.span3(id="password", type="password", name="password")
+            label Full Name
+            input.span3(id="fullname", type="name", name="fullname", placeholder="Ricardo Fonzaghi")
+            label Email Address
+            input.span3(id="email", type="email", name="email", placeholder="fonzaghi@benefleet.com")
+            br
+            br
+            input.btn(type="submit", value="Register")

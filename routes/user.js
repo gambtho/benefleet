@@ -43,20 +43,56 @@ exports.login = function(req, res){
     });
 };
 
+exports.register = function(req, res){
+    if (!module.parent) console.log('registering %s:%s', name, pass);
+    var user = lookup[req.body.username];
+    if (user) {
+        req.session.regenerate(function(){
+            req.session.error = user.name + ' is an existing username';
+            res.redirect('/register');
+        });
+    } else {
+        console.log("New user being registered, user: " + req.body.username);
+        console.log(users);
+        hash(req.body.password, function (err, salt, hash) {
+            if (err) return fn(err);
+            users.push({'name': req.body.username });
+            lookup[users[users.length-1].name] = users[users.length-1];
+            lookup[req.body.username].salt = salt;
+            lookup[req.body.username].hash = hash;
+            console.log(users);
+        });
+        req.session.regenerate(function(){
+                req.session.success = 'Registered as ' + req.body.username;
+                res.redirect('/login');
+        });
+    }
+};
+
+
 // dummy database
 
+var users = [
+    {name: 'tj'}];
+
+var lookup = [];
+for (var i = 0, len = users.length; i < len; i++) {
+    lookup[users[i].name] = users[i];
+}
+/*
 var users = {
     tj: { name: 'tj' },
-    tom: { name: 'tom'}
+    tom: { name: 'tom', pass: ''}
 };
+*/
 
 // when you create a user, generate a salt
 // and hash the password ('foobar' is the pass here)
 hash('foobar', function(err, salt, hash){
     if (err) throw err;
     // store the salt & hash in the "db"
-    users.tj.salt = salt;
-    users.tj.hash = hash;
+    users[0].salt = salt;
+    users[0].hash = hash;
 });
 
 
@@ -64,7 +100,9 @@ hash('foobar', function(err, salt, hash){
 
 function authenticate(name, pass, fn) {
     if (!module.parent) console.log('authenticating %s:%s', name, pass);
-    var user = users[name];
+    var user = lookup[name];
+    console.log("in authenticate");
+    console.log(users);
     // query the db for the given username
     if (!user) return fn(new Error('cannot find user'));
     // apply the same algorithm to the POSTed password, applying
