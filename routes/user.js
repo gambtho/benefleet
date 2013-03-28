@@ -1,4 +1,4 @@
-
+var db = require('../model/dao.js').db;
 var hash = require('pwd').hash;
 
 
@@ -36,42 +36,45 @@ exports.login = function(req, res){
         } else {
             console.log("Authentication failed");
             req.session.error = 'Authentication failed, please check your '
-                + ' username and password.'
-                + ' (use "tj" and "foobar")';
+                + ' username and password.';
             res.redirect('login');
         }
     });
 };
 
 exports.register = function(req, res){
-    if (!module.parent) console.log('registering %s:%s', name, pass);
-    var user = lookup[req.body.username];
-    if (user) {
-        req.session.regenerate(function(){
-            req.session.error = user.name + ' is an existing username';
-            res.redirect('/register');
+    if (!module.parent) console.log('registering %s:%s', req.body.username, req.body.password);
+
+    db.get(req.body.username, function (err, doc) {
+        if(doc) {
+           req.session.regenerate(function(){
+            req.session.error = req.body.username + ' is an existing username';
+            res.redirect('/register'); 
         });
-    } else {
+       }
+    else {
         console.log("New user being registered, user: " + req.body.username);
-        console.log(users);
+
         hash(req.body.password, function (err, salt, hash) {
             if (err) return fn(err);
-            users.push({'name': req.body.username });
-            lookup[users[users.length-1].name] = users[users.length-1];
-            lookup[req.body.username].salt = salt;
-            lookup[req.body.username].hash = hash;
-            console.log(users);
+            db.save(req.body.username, {
+                salt: salt, hash: hash
+            }, function (err, res) {
+                console.log('Need to handle db response');
+                if(err) console.log('DB error saving user - ' + err);
+            });
         });
         req.session.regenerate(function(){
                 req.session.success = 'Registered as ' + req.body.username;
                 res.redirect('/login');
         });
     }
-};
+    });
+}
 
 
 // dummy database
-
+/*
 var users = [
     {name: 'tj'}];
 
@@ -79,7 +82,7 @@ var lookup = [];
 for (var i = 0, len = users.length; i < len; i++) {
     lookup[users[i].name] = users[i];
 }
-/*
+
 var users = {
     tj: { name: 'tj' },
     tom: { name: 'tom', pass: ''}
@@ -88,21 +91,28 @@ var users = {
 
 // when you create a user, generate a salt
 // and hash the password ('foobar' is the pass here)
+/*
 hash('foobar', function(err, salt, hash){
     if (err) throw err;
     // store the salt & hash in the "db"
     users[0].salt = salt;
     users[0].hash = hash;
 });
-
+*/
 
 // Authenticate using our plain-object database of doom!
 
 function authenticate(name, pass, fn) {
     if (!module.parent) console.log('authenticating %s:%s', name, pass);
-    var user = lookup[name];
+    db.get(name, function (err, user) {
+      /*  
+      console.log("---------");
+      console.log("DB debug statement");
+      console.log(doc);
+      console.log("---------")
+      */
     console.log("in authenticate");
-    console.log(users);
+    console.log(user);
     // query the db for the given username
     if (!user) return fn(new Error('cannot find user'));
     // apply the same algorithm to the POSTed password, applying
@@ -112,6 +122,8 @@ function authenticate(name, pass, fn) {
         if (err) return fn(err);
         if (hash == user.hash) return fn(null, user);
         fn(new Error('invalid password'));
+    });
+
     });
 }
 

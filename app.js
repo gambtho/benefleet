@@ -8,6 +8,7 @@ var express = require('express')
   , user = require('./routes/user')
   , vehicle = require('./routes/vehicle')
   , http = require('http')
+  , cradle = require('cradle')
   , path = require('path');
 
 var app = express();
