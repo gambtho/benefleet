@@ -20,6 +20,7 @@ exports.logout = function (req, res) {
 
 exports.login = function(req, res){
     authenticate(req.body.username, req.body.password, function(err, user){
+        console.log('User is: ' + user);
         if (user) {
             // Regenerate session when signing in
             // to prevent fixation
