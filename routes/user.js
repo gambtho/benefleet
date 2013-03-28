@@ -128,7 +128,7 @@ function authenticate(name, pass, fn) {
             console.log('error getting hash');
             return fn(err);
         }
-        if (hash == user.hash)
+        if (hash === user.hash)
         {
             console.log('passwords matched');
             return fn(null, user);
