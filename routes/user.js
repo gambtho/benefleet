@@ -57,6 +57,7 @@ exports.register = function(req, res){
 
         hash(req.body.password, function (err, salt, hash) {
             if (err) return fn(err);
+            console.log('hash is:' + hash);
             db.save(req.body.username, {
                 salt: salt, hash: hash
             }, function (err, res) {
@@ -119,6 +120,8 @@ function authenticate(name, pass, fn) {
     // the hash against the pass / salt, if there is a match we
     // found the user
     hash(pass, user.salt, function (err, hash) {
+        console.log('hash is: ' + hash);
+        console.log('user.hash is: ' + user.hash);
         if (err) return fn(err);
         if (hash == user.hash) return fn(null, user);
         fn(new Error('invalid password'));
