@@ -123,8 +123,17 @@ function authenticate(name, pass, fn) {
     hash(pass, user.salt, function (err, hash) {
         console.log('hash is: ' + hash);
         console.log('user.hash is: ' + user.hash);
-        if (err) return fn(err);
-        if (hash == user.hash) return fn(null, user);
+        if (err)
+        {   
+            console.log('error getting hash');
+            return fn(err);
+        }
+        if (hash == user.hash)
+        {
+            console.log('passwords matched');
+            return fn(null, user);
+        }
+        console.log('passwords did not match');
         fn(new Error('invalid password'));
     });
 
