@@ -20,7 +20,7 @@ exports.logout = function (req, res) {
 
 exports.login = function(req, res){
     authenticate(req.body.username, req.body.password, function(err, user){
-        console.log('User is: ' + user);
+        //console.log('User is: ' + user);
         if (user) {
             // Regenerate session when signing in
             // to prevent fixation
@@ -35,7 +35,7 @@ exports.login = function(req, res){
                 res.redirect('/');
             });
         } else {
-            console.log("Authentication failed");
+            //console.log("Authentication failed for " + user);
             req.session.error = 'Authentication failed, please check your '
                 + ' username and password.';
             res.redirect('login');
@@ -58,11 +58,11 @@ exports.register = function(req, res){
 
         hash(req.body.password, function (err, salt, hash) {
             if (err) return fn(err);
-            console.log('hash is:' + hash);
+            //console.log('hash is:' + hash);
             db.save(req.body.username, {
-                salt: salt, hash: hash
+                salt: salt, hash: hash, type: 'user'
             }, function (err, res) {
-                console.log('Need to handle db response');
+                //console.log('Need to handle db response');
                 if(err) console.log('DB error saving user - ' + err);
             });
         });
@@ -113,27 +113,27 @@ function authenticate(name, pass, fn) {
       console.log(doc);
       console.log("---------")
       */
-    console.log("in authenticate");
-    console.log(user);
+    //console.log("in authenticate");
+    console.log(name + ' - logged in');
     // query the db for the given username
     if (!user) return fn(new Error('cannot find user'));
     // apply the same algorithm to the POSTed password, applying
     // the hash against the pass / salt, if there is a match we
     // found the user
     hash(pass, user.salt, function (err, hash) {
-        console.log('hash is: ' + hash);
-        console.log('user.hash is: ' + user.hash);
+        //console.log('hash is: ' + hash);
+        //console.log('user.hash is: ' + user.hash);
         if (err)
         {   
-            console.log('error getting hash');
+            //console.log('error getting hash');
             return fn(err);
         }
         if (hash.toString('utf-8') === user.hash.toString('utf-8'))
         {
-            console.log('passwords matched');
+           // console.log('passwords matched');
             return fn(null, user);
         }
-        console.log('passwords did not match');
+        console.log(user + ' - invalid password');
         fn(new Error('invalid password'));
     });
 

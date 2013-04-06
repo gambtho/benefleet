@@ -1,6 +1,5 @@
 var cradle = require('cradle');
 
-
 /*
 interesting stuff on views & map/reduce at
 http://keyholesoftware.com/2012/12/10/node-application-server-with-couchdb/
@@ -16,11 +15,30 @@ db.exists(function (err, exists) {
 if(err) {
 console.log('db error', err);
 } else if (exists) {
-console.log('db exists');
+//console.log('db exists');
 } else {
-console.log('db does not exist');
+console.log('Creating new database');
 db.create();
 }
+});
+
+db.save('_design/vehicles', {
+	views: {
+    	all: {
+      		map: function (doc) {
+        		if (doc.type === 'vehicle') {
+          			emit(null, doc);
+        		}
+      		}
+    	},
+    	byVin: {
+      		map: function (doc) {
+        		if (doc.type === 'vehicle') {
+          			emit(doc.vin, doc);
+        		}
+      		}
+    	}
+	}
 });
 
 exports.db = db;
